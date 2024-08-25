@@ -123,7 +123,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
 }
 
 resource "azurerm_ssh_public_key" "res_ssh_public" {
-  name                = "adminuser"
+  name                = var.adminuser
   resource_group_name = azurerm_resource_group.mod4_rg.name
   location            = azurerm_resource_group.mod4_rg.location
   public_key          = var.ssh_public_key
