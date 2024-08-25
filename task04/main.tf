@@ -102,6 +102,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     version   = "24.04.202404230"
   }
   tags = var.tags
+
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
@@ -116,6 +117,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     host        = azurerm_public_ip.mod4_pip.ip_address
     private_key = var.ssh_private_key
   }
+  depends_on = [azurerm_public_ip.mod4_pip]
 }
 
 
