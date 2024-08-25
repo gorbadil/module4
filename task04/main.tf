@@ -67,9 +67,9 @@ resource "azurerm_network_interface" "mod4_nic" {
   location            = azurerm_resource_group.mod4_rg.location
   resource_group_name = azurerm_resource_group.mod4_rg.name
   ip_configuration {
-    name                          = "internal"
+    name                          = var.ip_config_name
     subnet_id                     = azurerm_subnet.mod4_subnet.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = var.ipconfig_address_allocation
     public_ip_address_id          = azurerm_public_ip.mod4_pip.id
   }
 }
