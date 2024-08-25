@@ -25,6 +25,7 @@ resource "azurerm_public_ip" "mod4_pip" {
   resource_group_name = azurerm_resource_group.mod4_rg.name
   allocation_method   = "Dynamic"
   tags                = var.tags
+  domain_name_label   = var.dns_name_label
 }
 
 resource "azurerm_network_security_group" "mod4_nsg" {
@@ -117,7 +118,6 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     host        = self.public_ip_address
     private_key = var.ssh_private_key
   }
-  depends_on = [azurerm_public_ip.mod4_pip]
 }
 
 
