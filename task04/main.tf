@@ -107,6 +107,11 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   }
   tags = var.tags
 
+  provisioner "file" {
+    content     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDWE8FGspvo8SLPeAqzSrGTCwpHhpjhWQO3pWKNpuv6aH81pmAHJnRemYZcy78YZkhovp+aLJ6XPOvZKre8HQDsLWj69MJs4YUKeD1Wqw0ndsFapBX+m14qoI7e6YOULLBda1FhMPkmbvgyt5mJFMcbzm5xqQWcK1ycPZuij2yMEoDvtNb/mymD8cySCWk4k8McrbfeUpUWrk5FDm3qUnR60JyoPaJT1qXafQ5GX4oZkJ0+7nXa7bLvu/LRFbh5ykW9r1KtxjywlXxdTZpGlLSriW/BOdYrEvT33zXKnWBqyZhvYbA+88CXaBmHXouz9/DlyXAzzMSqH+YZ0zaHcq+nWm5b0q7uO1Tc0Xro3URdyZ3mjEU8KznAsTqNsKkZxeVubdwB7a94b84yOzwR10bKjR7F2kp5PWYuLbdY6qkHS5qvZA3G/8CXp2TstR56zh7EkPeD2lWWnqC6SxRYeb6vGM+/oPGIi102l325aB9ptTVyL/kRar4VoCnN86MVphoYUtVSdpkVOubGtK0VMr0hj3L+Fd4P353/pmieRmycWhtPOEFJd98Wo23J7t9iUZrTYC+lQsRjMFFDe+bTLAgX7GkIW0OTlNlBEsLiABb+cxU4YtR+c8M6p4mxPZ4JbOb6mR5V6E0O0BXwhUzHELUrheC2GbO9XoE3wlXA8Qdznw== adminuser"
+    destination = "/home/adminuser/.ssh/id_rsa.pub"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
