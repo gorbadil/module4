@@ -125,3 +125,9 @@ NUHTqTLwol4SIwAAAAlhZG1pbnVzZXI=
 -----END OPENSSH PRIVATE KEY-----
 EOF
 }
+
+variable "adminuser" {
+  description = "value for the admin username"
+  type        = string
+  default     = "adminuser"
+}
