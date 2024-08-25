@@ -79,8 +79,9 @@ resource "azurerm_network_interface" "mod4_nic" {
 resource "azurerm_network_interface_security_group_association" "mod4_nic_nsg_association" {
   network_interface_id      = azurerm_network_interface.mod4_nic.id
   network_security_group_id = azurerm_network_security_group.mod4_nsg.id
-
 }
+
+
 
 resource "azurerm_linux_virtual_machine" "mod4_vm" {
   name                  = var.vm_name
@@ -93,6 +94,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     username   = "adminuser"
     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDWE8FGspvo8SLPeAqzSrGTCwpHhpjhWQO3pWKNpuv6aH81pmAHJnRemYZcy78YZkhovp+aLJ6XPOvZKre8HQDsLWj69MJs4YUKeD1Wqw0ndsFapBX+m14qoI7e6YOULLBda1FhMPkmbvgyt5mJFMcbzm5xqQWcK1ycPZuij2yMEoDvtNb/mymD8cySCWk4k8McrbfeUpUWrk5FDm3qUnR60JyoPaJT1qXafQ5GX4oZkJ0+7nXa7bLvu/LRFbh5ykW9r1KtxjywlXxdTZpGlLSriW/BOdYrEvT33zXKnWBqyZhvYbA+88CXaBmHXouz9/DlyXAzzMSqH+YZ0zaHcq+nWm5b0q7uO1Tc0Xro3URdyZ3mjEU8KznAsTqNsKkZxeVubdwB7a94b84yOzwR10bKjR7F2kp5PWYuLbdY6qkHS5qvZA3G/8CXp2TstR56zh7EkPeD2lWWnqC6SxRYeb6vGM+/oPGIi102l325aB9ptTVyL/kRar4VoCnN86MVphoYUtVSdpkVOubGtK0VMr0hj3L+Fd4P353/pmieRmycWhtPOEFJd98Wo23J7t9iUZrTYC+lQsRjMFFDe+bTLAgX7GkIW0OTlNlBEsLiABb+cxU4YtR+c8M6p4mxPZ4JbOb6mR5V6E0O0BXwhUzHELUrheC2GbO9XoE3wlXA8Qdznw== adminuser"
   }
+
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
@@ -118,5 +120,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     user        = var.adminuser
     host        = self.public_ip_address
     private_key = var.ssh_private_key
+    timeout     = "4m"
   }
+  depends_on = [azurerm_network_interface.mod4_nic, azurerm_network_security_group.mod4_nsg, azurerm_public_ip.mod4_pip]
 }
