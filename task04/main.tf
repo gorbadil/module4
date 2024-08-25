@@ -90,8 +90,9 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   admin_username        = "adminuser"
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   admin_ssh_key {
-    username   = "adminuser"
-    public_key = var.ssh_public_key
+    username = "adminuser"
+    # public_key = var.ssh_public_key
+    public_key = azurerm_ssh_public_key.res_ssh_public.public_key
   }
   os_disk {
     caching              = "ReadWrite"
@@ -121,4 +122,10 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   }
 }
 
-
+resource "azurerm_ssh_public_key" "res_ssh_public" {
+  name                = "adminuser"
+  resource_group_name = azurerm_resource_group.mod4_rg.name
+  location            = azurerm_resource_group.mod4_rg.location
+  public_key          = var.ssh_public_key
+  tags                = var.tags
+}
