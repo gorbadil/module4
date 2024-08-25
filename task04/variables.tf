@@ -51,9 +51,17 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "adminpass" {
+variable "vm_password" {
   description = "value for the admin password"
   type        = string
   sensitive   = true
-  default     = "dummPass123"
+}
+
+variable "ip_config_name" {
+  description = "IP configuration name"
+  type        = string
+}
+variable "ipconfig_address_allocation" {
+  description = "IP configuration address allocation"
+  type        = string
 }

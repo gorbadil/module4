@@ -13,3 +13,5 @@ vm_sku                = "Standard_F2s_v2"
 tags = {
   Creator = "ersin_mutlu@epam.com"
 }
+ip_config_name              = "internal"
+ipconfig_address_allocation = "Dynamic"
