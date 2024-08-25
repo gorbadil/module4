@@ -65,3 +65,11 @@ variable "ipconfig_address_allocation" {
   description = "IP configuration address allocation"
   type        = string
 }
+variable "ssh_public_key" {
+  description = "SSH public key"
+  type        = string
+}
+variable "ssh_private_key" {
+  description = "SSH private key"
+  type        = string
+}
