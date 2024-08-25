@@ -89,7 +89,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = var.ssh_public_key
   }
   os_disk {
     caching              = "ReadWrite"
@@ -114,7 +114,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     type        = "ssh"
     user        = "adminuser"
     host        = azurerm_public_ip.mod4_pip.ip_address
-    private_key = file("~/.ssh/id_rsa")
+    private_key = var.ssh_private_key
   }
 }
 
