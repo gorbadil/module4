@@ -87,10 +87,10 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   resource_group_name   = azurerm_resource_group.mod4_rg.name
   location              = azurerm_resource_group.mod4_rg.location
   size                  = var.vm_sku
-  admin_username        = "ersin_mutlu@epam.com"
+  admin_username        = "adminuser"
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   admin_ssh_key {
-    username   = "ersin_mutlu@epam.com"
+    username   = "adminuser"
     public_key = var.ssh_public_key
   }
   os_disk {
@@ -115,7 +115,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   }
   connection {
     type        = "ssh"
-    user        = "ersin_mutlu@epam.com"
+    user        = "adminuser"
     host        = self.public_ip_address
     private_key = var.ssh_private_key
   }
