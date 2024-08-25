@@ -114,7 +114,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   connection {
     type        = "ssh"
     user        = "adminuser"
-    host        = azurerm_public_ip.mod4_pip.ip_address
+    host        = self.public_ip_address
     private_key = var.ssh_private_key
   }
   depends_on = [azurerm_public_ip.mod4_pip]
