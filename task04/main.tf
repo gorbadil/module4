@@ -73,6 +73,7 @@ resource "azurerm_network_interface" "mod4_nic" {
     private_ip_address_allocation = var.ipconfig_address_allocation
     public_ip_address_id          = azurerm_public_ip.mod4_pip.id
   }
+  tags = var.tags
 }
 
 resource "azurerm_network_interface_security_group_association" "mod4_nic_nsg_association" {
@@ -89,7 +90,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   admin_username        = "adminuser"
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   admin_ssh_key {
-    username   = "adminuser"
+    username   = "ersin_mutlu@epam.com"
     public_key = var.ssh_public_key
   }
   os_disk {
@@ -114,7 +115,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   }
   connection {
     type        = "ssh"
-    user        = "adminuser"
+    user        = "ersin_mutlu@epam.com"
     host        = self.public_ip_address
     private_key = var.ssh_private_key
   }
