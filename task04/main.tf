@@ -89,7 +89,6 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   location              = azurerm_resource_group.mod4_rg.location
   size                  = var.vm_sku
   admin_username        = "adminuser"
-  admin_password        = var.vm_password
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   admin_ssh_key {
     username   = "adminuser"
@@ -121,7 +120,6 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     user        = var.adminuser
     host        = self.public_ip_address
     private_key = var.ssh_private_key
-    timeout     = "4m"
   }
   depends_on = [azurerm_network_interface.mod4_nic, azurerm_network_security_group.mod4_nsg, azurerm_public_ip.mod4_pip]
 }
