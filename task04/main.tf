@@ -86,6 +86,7 @@ resource "tls_private_key" "secureadmin_ssh" {
   rsa_bits  = 4096
 }
 
+
 resource "azurerm_linux_virtual_machine" "mod4_vm" {
   name                  = var.vm_name
   location              = azurerm_resource_group.mod4_rg.location
@@ -124,7 +125,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     type        = "ssh"
     user        = var.adminuser
     host        = self.public_ip_address
-    private_key = azapi_resource_action.ssh_public_key_gen.output.private_key
+    private_key = tls_private_key.secureadmin_ssh.private_key_openssh
   }
   depends_on = [azurerm_network_interface.mod4_nic, azurerm_network_security_group.mod4_nsg, azurerm_public_ip.mod4_pip]
 }
