@@ -12,30 +12,6 @@ resource "azurerm_virtual_network" "mod4_vnet" {
   tags                = var.tags
 }
 
-resource "random_pet" "ssh_key_name" {
-  length    = 2
-  separator = ""
-}
-
-resource "azapi_resource_action" "ssh_public_key_gen" {
-  type                   = "Microft.Compute/sshPublicKeys@2022-11-01"
-  resource_id            = azapi_resource.ssh_public_key.id
-  action                 = "generateKeyPair"
-  method                 = "POST"
-  response_export_values = ["publicKey", "privateKey"]
-}
-
-resource "azapi_resource" "ssh_public_key" {
-  type      = "Microsoft.Compute/sshPublicKeys@2022-11-01"
-  name      = random_pet.ssh_key_name.id
-  location  = azurerm_resource_group.mod4_rg.location
-  parent_id = azurerm_resource_group.mod4_rg.id
-}
-
-output "key_data" {
-  value = azapi_resource_action.ssh_public_key_gen.output.publicKey
-}
-
 resource "azurerm_subnet" "mod4_subnet" {
   name                 = var.subnet_name
   resource_group_name  = azurerm_resource_group.mod4_rg.name
@@ -105,21 +81,25 @@ resource "azurerm_network_interface_security_group_association" "mod4_nic_nsg_as
   network_security_group_id = azurerm_network_security_group.mod4_nsg.id
 }
 
-
+resource "tls_private_key" "secureadmin_ssh" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
 
 resource "azurerm_linux_virtual_machine" "mod4_vm" {
   name                  = var.vm_name
-  resource_group_name   = azurerm_resource_group.mod4_rg.name
   location              = azurerm_resource_group.mod4_rg.location
-  size                  = var.vm_sku
-  admin_username        = "adminuser"
+  resource_group_name   = azurerm_resource_group.mod4_rg.name
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
+  size                  = var.vm_sku
+  admin_username        = var.adminuser
   admin_ssh_key {
-    username   = "adminuser"
-    public_key = azapi_resource_action.ssh_public_key_gen.output.publicKey
+    username   = var.adminuser
+    public_key = tls_private_key.secureadmin_ssh.public_key_openssh
   }
 
   os_disk {
+    name                 = "${var.vm_name}-osdisk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
@@ -137,9 +117,9 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
       "sudo apt-get install -y nginx",
       "sudo systemctl start nginx",
       "sudo systemctl enable nginx"
-
     ]
   }
+
   connection {
     type        = "ssh"
     user        = var.adminuser
