@@ -88,10 +88,8 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   size                  = var.vm_sku
   admin_username        = var.adminuser
-  admin_ssh_key {
-    username   = var.adminuser
-    public_key = file("~/.ssh/id_rsa.pub")
-  }
+  admin_password        = var.vm_password
+
 
   os_disk {
     name                 = "${var.vm_name}-osdisk"
@@ -108,11 +106,6 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
 
   provisioner "remote-exec" {
     inline = [
-      "ssh-keygen -t rsa -b 4096 -f /home/${var.adminuser}/.ssh/id_rsa -q -N ''",
-      "cat /home/${var.adminuser}/.ssh/id_rsa.pub",
-      "chmod 700 /home/${var.adminuser}/.ssh",
-      "chmod 600 /home/${var.adminuser}/.ssh/id_rsa",
-      "chmod 644 /home/${var.adminuser}/.ssh/id_rsa.pub",
       "sudo apt-get update",
       "sudo apt-get install -y nginx",
       "sudo systemctl start nginx",
@@ -121,10 +114,10 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   }
 
   connection {
-    type        = "ssh"
-    user        = var.adminuser
-    host        = self.public_ip_address
-    private_key = file("~/.ssh/id_rsa")
+    type     = "ssh"
+    user     = var.adminuser
+    host     = self.public_ip_address
+    password = var.vm_password
   }
   depends_on = [azurerm_network_interface.mod4_nic, azurerm_network_security_group.mod4_nsg, azurerm_public_ip.mod4_pip]
 }
