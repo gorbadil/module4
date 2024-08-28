@@ -81,12 +81,6 @@ resource "azurerm_network_interface_security_group_association" "mod4_nic_nsg_as
   network_security_group_id = azurerm_network_security_group.mod4_nsg.id
 }
 
-resource "tls_private_key" "secureadmin_ssh" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-
 resource "azurerm_linux_virtual_machine" "mod4_vm" {
   name                  = var.vm_name
   location              = azurerm_resource_group.mod4_rg.location
@@ -96,7 +90,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   admin_username        = var.adminuser
   admin_ssh_key {
     username   = var.adminuser
-    public_key = tls_private_key.secureadmin_ssh.public_key_openssh
+    public_key = file("~/.ssh/id_rsa.pub")
   }
 
   os_disk {
@@ -114,6 +108,11 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
 
   provisioner "remote-exec" {
     inline = [
+      "ssh-keygen -t rsa -b 4096 -f /home/${var.adminuser}/.ssh/id_rsa -q -N ''",
+      "cat /home/${var.adminuser}/.ssh/id_rsa.pub",
+      "chmod 700 /home/${var.adminuser}/.ssh",
+      "chmod 600 /home/${var.adminuser}/.ssh/id_rsa",
+      "chmod 644 /home/${var.adminuser}/.ssh/id_rsa.pub",
       "sudo apt-get update",
       "sudo apt-get install -y nginx",
       "sudo systemctl start nginx",
@@ -125,7 +124,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     type        = "ssh"
     user        = var.adminuser
     host        = self.public_ip_address
-    private_key = tls_private_key.secureadmin_ssh.private_key_openssh
+    private_key = file("~/.ssh/id_rsa")
   }
   depends_on = [azurerm_network_interface.mod4_nic, azurerm_network_security_group.mod4_nsg, azurerm_public_ip.mod4_pip]
 }
