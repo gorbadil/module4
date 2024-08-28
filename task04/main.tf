@@ -82,14 +82,14 @@ resource "azurerm_network_interface_security_group_association" "mod4_nic_nsg_as
 }
 
 resource "azurerm_linux_virtual_machine" "mod4_vm" {
-  name                  = var.vm_name
-  location              = azurerm_resource_group.mod4_rg.location
-  resource_group_name   = azurerm_resource_group.mod4_rg.name
-  network_interface_ids = [azurerm_network_interface.mod4_nic.id]
-  size                  = var.vm_sku
-  admin_username        = var.adminuser
-  admin_password        = var.vm_password
-
+  name                            = var.vm_name
+  location                        = azurerm_resource_group.mod4_rg.location
+  resource_group_name             = azurerm_resource_group.mod4_rg.name
+  network_interface_ids           = [azurerm_network_interface.mod4_nic.id]
+  size                            = var.vm_sku
+  admin_username                  = var.adminuser
+  admin_password                  = var.vm_password
+  disable_password_authentication = false
 
   os_disk {
     name                 = "${var.vm_name}-osdisk"
