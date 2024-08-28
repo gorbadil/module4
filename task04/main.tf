@@ -12,6 +12,30 @@ resource "azurerm_virtual_network" "mod4_vnet" {
   tags                = var.tags
 }
 
+resource "random_pet" "ssh_key_name" {
+  prefix    = "ssh"
+  separator = ""
+}
+
+resource "azapi_resource_action" "ssh_public_key_gen" {
+  type                   = "Microft.Compute/sshPublicKeys@2022-11-01"
+  resource_id            = azapi_resource.ssh_public_key.id
+  action                 = "generateKeyPair"
+  method                 = "POST"
+  response_export_values = ["publicKey", "privateKey"]
+}
+
+resource "azapi_resource" "ssh_public_key" {
+  type      = "Microsoft.Compute/sshPublicKeys@2022-11-01"
+  name      = random_pet.ssh_key_name.id
+  location  = azurerm_resource_group.rg.location
+  parent_id = azurerm_resource_group.rg.id
+}
+
+output "key_data" {
+  value = azapi_resource_action.ssh_public_key_gen.output.publicKey
+}
+
 resource "azurerm_subnet" "mod4_subnet" {
   name                 = var.subnet_name
   resource_group_name  = azurerm_resource_group.mod4_rg.name
@@ -92,7 +116,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   admin_ssh_key {
     username   = "adminuser"
-    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDWE8FGspvo8SLPeAqzSrGTCwpHhpjhWQO3pWKNpuv6aH81pmAHJnRemYZcy78YZkhovp+aLJ6XPOvZKre8HQDsLWj69MJs4YUKeD1Wqw0ndsFapBX+m14qoI7e6YOULLBda1FhMPkmbvgyt5mJFMcbzm5xqQWcK1ycPZuij2yMEoDvtNb/mymD8cySCWk4k8McrbfeUpUWrk5FDm3qUnR60JyoPaJT1qXafQ5GX4oZkJ0+7nXa7bLvu/LRFbh5ykW9r1KtxjywlXxdTZpGlLSriW/BOdYrEvT33zXKnWBqyZhvYbA+88CXaBmHXouz9/DlyXAzzMSqH+YZ0zaHcq+nWm5b0q7uO1Tc0Xro3URdyZ3mjEU8KznAsTqNsKkZxeVubdwB7a94b84yOzwR10bKjR7F2kp5PWYuLbdY6qkHS5qvZA3G/8CXp2TstR56zh7EkPeD2lWWnqC6SxRYeb6vGM+/oPGIi102l325aB9ptTVyL/kRar4VoCnN86MVphoYUtVSdpkVOubGtK0VMr0hj3L+Fd4P353/pmieRmycWhtPOEFJd98Wo23J7t9iUZrTYC+lQsRjMFFDe+bTLAgX7GkIW0OTlNlBEsLiABb+cxU4YtR+c8M6p4mxPZ4JbOb6mR5V6E0O0BXwhUzHELUrheC2GbO9XoE3wlXA8Qdznw== adminuser"
+    public_key = azapi_resource.ssh_public_key_gen.output.publicKey
   }
 
   os_disk {
