@@ -13,7 +13,7 @@ resource "azurerm_virtual_network" "mod4_vnet" {
 }
 
 resource "random_pet" "ssh_key_name" {
-  prefix    = "ssh"
+  length    = 2
   separator = ""
 }
 
@@ -28,8 +28,8 @@ resource "azapi_resource_action" "ssh_public_key_gen" {
 resource "azapi_resource" "ssh_public_key" {
   type      = "Microsoft.Compute/sshPublicKeys@2022-11-01"
   name      = random_pet.ssh_key_name.id
-  location  = azurerm_resource_group.rg.location
-  parent_id = azurerm_resource_group.rg.id
+  location  = azurerm_resource_group.mod4_rg.location
+  parent_id = azurerm_resource_group.mod4_rg.id
 }
 
 output "key_data" {
@@ -116,7 +116,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   network_interface_ids = [azurerm_network_interface.mod4_nic.id]
   admin_ssh_key {
     username   = "adminuser"
-    public_key = azapi_resource.ssh_public_key_gen.output.publicKey
+    public_key = azapi_resource_action.ssh_public_key_gen.output.publicKey
   }
 
   os_disk {
@@ -134,7 +134,6 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
-      "ssh-keygen -t rsa -b 2048 -f /home/adminuser/.ssh/id_rsa -q -N ''",
       "sudo apt-get install -y nginx",
       "sudo systemctl start nginx",
       "sudo systemctl enable nginx"
@@ -145,7 +144,7 @@ resource "azurerm_linux_virtual_machine" "mod4_vm" {
     type        = "ssh"
     user        = var.adminuser
     host        = self.public_ip_address
-    private_key = var.ssh_private_key
+    private_key = azapi_resource_action.ssh_public_key_gen.output.private_key
   }
   depends_on = [azurerm_network_interface.mod4_nic, azurerm_network_security_group.mod4_nsg, azurerm_public_ip.mod4_pip]
 }

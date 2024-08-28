@@ -133,3 +133,9 @@ variable "adminuser" {
   type        = string
   default     = "adminuser"
 }
+
+variable "ssh_key_name" {
+  description = "SSH key name"
+  type        = string
+  default     = "mod4_ssh_key"
+}
